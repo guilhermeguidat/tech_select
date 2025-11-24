@@ -1,0 +1,83 @@
+package com.br.tggp.techselect.service;
+
+import com.br.tggp.techselect.dto.CandidaturaRequest;
+import com.br.tggp.techselect.dto.CandidaturaResponse;
+import com.br.tggp.techselect.enums.Apto;
+import com.br.tggp.techselect.mapper.CandidaturaMapper;
+import com.br.tggp.techselect.model.Candidatura;
+import com.br.tggp.techselect.model.Vaga;
+import com.br.tggp.techselect.repository.CandidaturaRepository;
+import com.br.tggp.techselect.repository.VagaRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class CandidaturaService {
+
+    private final CandidaturaRepository candidaturaRepository;
+    private final VagaRepository vagaRepository;
+    private final RecrutadorService recrutadorService;
+    private final AvaliadorDeCandidatura avaliadorDeCandidatura;
+
+    public CandidaturaResponse criarCandidatura(CandidaturaRequest candidaturaRequest) {
+        try {
+            // Map request to entity (without Vaga association)
+            Candidatura candidatura = CandidaturaMapper.toEntity(candidaturaRequest);
+
+            // Associate skills with the candidatura
+            if (candidatura.getSkills() != null) {
+                candidatura.getSkills().forEach(skill -> skill.setCandidatura(candidatura));
+            }
+
+            // Fetch the existing Vaga entity and set it on the candidatura
+            Vaga vaga = vagaRepository.findById(candidaturaRequest.getIdVaga())
+                    .orElseThrow(() -> new IllegalArgumentException("Vaga not found"));
+            candidatura.setVaga(vaga);
+
+            // Persist and return response DTO
+            return CandidaturaMapper.toResponse(candidaturaRepository.save(candidatura));
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao criar candidatura: ", e);
+        }
+    }
+
+    public List<CandidaturaResponse> listarCandidaturas(Long idRecrutador) {
+        verificaExistenciaDoRecrutador(idRecrutador);
+        List<Candidatura> candidaturas = retornaCandidaturasPorRecrutador(idRecrutador);
+
+        if (candidaturas == null || candidaturas.isEmpty()) {
+            return List.of();
+        }
+
+        // Avaliar cada candidatura
+        for (Candidatura candidatura : candidaturas) {
+            Apto apto = avaliadorDeCandidatura.avaliacaoCandidatura(candidatura);
+            candidatura.setAptidao(apto);
+        }
+        return CandidaturaMapper.toResponseList(candidaturas);
+    }
+
+    public void verificacoesListagemCandidaturas(Long idRecrutador, List<Candidatura> candidaturas) {
+        verificaExistenciaDoRecrutador(idRecrutador);
+        verificaListaVazia(candidaturas);
+    }
+
+    public void verificaListaVazia(List<Candidatura> candidaturas) {
+        if (candidaturas == null || candidaturas.isEmpty()) {
+            throw new EntityNotFoundException("Recrutador sem candidaturas!");
+        }
+    }
+
+    public void verificaExistenciaDoRecrutador(Long idRecrutador) {
+        if (idRecrutador == null || !recrutadorService.existeRecrutador(idRecrutador)) {
+            throw new IllegalArgumentException("Recrutador inexistente");
+        }
+    }
+
+    public List<Candidatura> retornaCandidaturasPorRecrutador(Long idRecrutador) {
+        return candidaturaRepository.findAllWithVaga(idRecrutador);
+    }
+}

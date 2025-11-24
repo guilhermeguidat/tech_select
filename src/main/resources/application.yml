@@ -1,0 +1,30 @@
+spring:
+  application:
+    name:techselect
+  datasource:
+    url: jdbc:postgresql://localhost:5556/techselect
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:tech-select}
+
+minio:
+  url: http://localhost:9100
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket: techselect
