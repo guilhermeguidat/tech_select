@@ -24,20 +24,16 @@ public class CandidaturaService {
 
     public CandidaturaResponse criarCandidatura(CandidaturaRequest candidaturaRequest) {
         try {
-            // Map request to entity (without Vaga association)
             Candidatura candidatura = CandidaturaMapper.toEntity(candidaturaRequest);
 
-            // Associate skills with the candidatura
             if (candidatura.getSkills() != null) {
                 candidatura.getSkills().forEach(skill -> skill.setCandidatura(candidatura));
             }
 
-            // Fetch the existing Vaga entity and set it on the candidatura
             Vaga vaga = vagaRepository.findById(candidaturaRequest.getIdVaga())
                     .orElseThrow(() -> new IllegalArgumentException("Vaga not found"));
             candidatura.setVaga(vaga);
 
-            // Persist and return response DTO
             return CandidaturaMapper.toResponse(candidaturaRepository.save(candidatura));
         } catch (Exception e) {
             throw new RuntimeException("Erro ao criar candidatura: ", e);
@@ -52,7 +48,6 @@ public class CandidaturaService {
             return List.of();
         }
 
-        // Avaliar cada candidatura
         for (Candidatura candidatura : candidaturas) {
             Apto apto = avaliadorDeCandidatura.avaliacaoCandidatura(candidatura);
             candidatura.setAptidao(apto);

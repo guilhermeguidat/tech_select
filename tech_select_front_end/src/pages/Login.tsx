@@ -43,7 +43,6 @@ const Login = () => {
     if (file) {
       setLogoFile(file);
 
-      // Criar preview da imagem
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoPreview(reader.result as string);
@@ -72,7 +71,6 @@ const Login = () => {
         description: result.message,
       });
 
-      // Simular envio de email de verificação
       setTimeout(() => {
         toast({
           title: 'Email de verificação enviado',
@@ -81,7 +79,6 @@ const Login = () => {
             <Button
               size="sm"
               onClick={() => {
-                // Simulação de verificação
                 toast({
                   title: 'Email verificado!',
                   description: 'Você já pode fazer login',
@@ -94,7 +91,6 @@ const Login = () => {
         });
       }, 1000);
 
-      // Auto-login após cadastro
       if (await login(email, senha)) {
         navigate('/dashboard');
       }

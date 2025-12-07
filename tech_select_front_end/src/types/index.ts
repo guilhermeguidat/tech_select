@@ -12,12 +12,12 @@ export interface Vaga {
   id: string;
   titulo: string;
   setor_id: string;
-  setor_nome?: string; // Nome do setor (opcional, vem do backend)
+  setor_nome?: string;
   recrutador_id: string;
   nivel: NivelVaga;
   skills_obrigatorias: string[];
   skills_desejaveis: string[];
-  tempo_experiencia_minimo: number; // em meses
+  tempo_experiencia_minimo: number;
   descricao: string;
   ativa: boolean;
   createdAt: string;
@@ -30,7 +30,7 @@ export interface Candidatura {
   email: string;
   telefone: string;
   skills: string[];
-  tempo_experiencia: number; // em meses
+  tempo_experiencia: number;
   curriculo_url: string;
   status: StatusCandidato;
   createdAt: string;

@@ -150,7 +150,6 @@ const VagaDialog = ({ open, onOpenChange, vaga, setores }: VagaDialogProps) => {
         });
       }
       onOpenChange(false);
-      // Reload the page to refresh the list
       window.location.reload();
     } catch (error) {
       toast({

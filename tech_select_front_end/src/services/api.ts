@@ -11,7 +11,6 @@ const getHeaders = () => {
 };
 
 export const api = {
-    // Auth
     login: async (data: LoginRequest): Promise<Recrutador & { token: string }> => {
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
@@ -35,7 +34,7 @@ export const api = {
     register: async (data: FormData): Promise<Recrutador> => {
         const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
-            body: data, // FormData handles Content-Type
+            body: data,
         });
         if (!response.ok) throw new Error('Registration failed');
         const backendRecrutador = await response.json();
@@ -50,7 +49,6 @@ export const api = {
         };
     },
 
-    // Vagas
     getVagas: async (idRecrutador: number): Promise<Vaga[]> => {
         const response = await fetch(`${API_URL}/vaga/recrutador/${idRecrutador}`, {
             headers: getHeaders(),
@@ -154,11 +152,6 @@ export const api = {
     },
 
     updateVaga: async (id: number, data: Partial<Vaga>): Promise<Vaga> => {
-        // Mapping for update is tricky with Partial.
-        // We assume data contains frontend keys, we need to map to backend keys if present.
-        // For simplicity, let's assume we send what we have, but keys need to match backend.
-        // This might fail if we send 'titulo' instead of 'tituloVaga'.
-        // We should map it properly.
         const backendData: any = {};
         if (data.titulo) backendData.tituloVaga = data.titulo;
         if (data.descricao) backendData.descricao = data.descricao;
@@ -166,8 +159,6 @@ export const api = {
         if (data.ativa !== undefined) backendData.status = data.ativa ? 'ABERTA' : 'FECHADA';
         if (data.tempo_experiencia_minimo) backendData.expMin = data.tempo_experiencia_minimo;
         if (data.setor_id) backendData.idSetor = parseInt(data.setor_id);
-        // Skills update is complex, backend expects full list usually.
-        // If we update skills, we need to send all of them.
         if (data.skills_obrigatorias || data.skills_desejaveis) {
             backendData.skills = [];
             if (data.skills_obrigatorias) {
@@ -195,7 +186,6 @@ export const api = {
         if (!response.ok) throw new Error('Failed to delete vaga');
     },
 
-    // Setores
     getSetores: async (idRecrutador: number): Promise<Setor[]> => {
         const response = await fetch(`${API_URL}/setor/recrutador/${idRecrutador}`, {
             headers: getHeaders(),
@@ -232,7 +222,6 @@ export const api = {
         if (!response.ok) throw new Error('Failed to delete setor');
     },
 
-    // Candidaturas
     getCandidaturas: async (idRecrutador: number): Promise<Candidatura[]> => {
         const response = await fetch(`${API_URL}/candidatura/recrutador/${idRecrutador}`, {
             headers: getHeaders(),
@@ -240,7 +229,6 @@ export const api = {
         if (!response.ok) throw new Error('Failed to fetch candidaturas');
         const backendCandidaturas = await response.json();
         return backendCandidaturas.map((c: any) => {
-            // Map Apto enum to StatusCandidato
             let status: 'muito_apto' | 'apto' | 'inapto' = 'inapto';
             if (c.apto === 'Muito apto') status = 'muito_apto';
             else if (c.apto === 'Apto') status = 'apto';

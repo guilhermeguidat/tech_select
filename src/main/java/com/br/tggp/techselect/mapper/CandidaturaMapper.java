@@ -19,7 +19,6 @@ public class CandidaturaMapper {
         c.setEmail(dto.getEmail());
         c.setTelefone(dto.getTelefone());
         c.setExp(dto.getExp());
-        // Vaga will be set in service layer to avoid missing required fields
         if (dto.getSkills() != null) {
             List<Skill> skills = SkillMapper.toListEntity(dto.getSkills());
             c.setSkills(skills);

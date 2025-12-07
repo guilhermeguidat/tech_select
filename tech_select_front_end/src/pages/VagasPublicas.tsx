@@ -20,9 +20,8 @@ const VagasPublicas = () => {
   useEffect(() => {
     const fetchVagas = async () => {
       try {
-        // Fetching all public vacancies
         const data = await api.getVagasPublicas();
-        setVagas(data); // Save vagas to state
+        setVagas(data);
 
         const setoresMap = new Map<string, Setor>();
         const recrutadoresMap = new Map<string, Recrutador>();

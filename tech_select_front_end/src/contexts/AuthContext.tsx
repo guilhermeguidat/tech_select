@@ -47,12 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       formData.append('nomeEmpresa', nome_empresa);
       formData.append('urlLogo', logo);
 
-      // Assuming for now we just send what we can.
-      // If RecrutadorRequest requires MultipartFile, this might fail if we don't send it.
-
       const user = await api.register(formData);
-      // Register doesn't return token usually, so we don't login automatically or we do?
-      // api.register returns Recrutador.
       return { success: true, message: 'Cadastro realizado!' };
     } catch (error) {
       console.error(error);
@@ -61,7 +56,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const verificarEmailUser = (id: string) => {
-    // Not implemented in backend
   };
 
   const logout = () => {

@@ -8,7 +8,6 @@ const STORAGE_KEYS = {
   AUTH: 'rh_auth',
 };
 
-// Inicializar com dados de exemplo
 const initializeStorage = () => {
   if (!localStorage.getItem(STORAGE_KEYS.RECRUTADORES)) {
     const recrutadorPadrao: Recrutador = {
@@ -43,7 +42,6 @@ const initializeStorage = () => {
 
 initializeStorage();
 
-// Vagas
 export const getVagas = (): Vaga[] => {
   return JSON.parse(localStorage.getItem(STORAGE_KEYS.VAGAS) || '[]');
 };
@@ -82,7 +80,6 @@ export const deleteVaga = (id: string): void => {
   localStorage.setItem(STORAGE_KEYS.VAGAS, JSON.stringify(vagas));
 };
 
-// Setores
 export const getSetores = (): Setor[] => {
   return JSON.parse(localStorage.getItem(STORAGE_KEYS.SETORES) || '[]');
 };
@@ -108,7 +105,6 @@ export const deleteSetor = (id: string): void => {
   localStorage.setItem(STORAGE_KEYS.SETORES, JSON.stringify(setores));
 };
 
-// Candidaturas
 export const getCandidaturas = (): Candidatura[] => {
   return JSON.parse(localStorage.getItem(STORAGE_KEYS.CANDIDATURAS) || '[]');
 };
@@ -121,12 +117,10 @@ const calcularStatus = (
   candidatura: Omit<Candidatura, 'id' | 'createdAt' | 'status'>,
   vaga: Vaga
 ): StatusCandidato => {
-  // Verificar tempo de experiência mínimo
   if (candidatura.tempo_experiencia < vaga.tempo_experiencia_minimo) {
     return 'inapto';
   }
 
-  // Verificar skills obrigatórias
   const temTodasObrigatorias = vaga.skills_obrigatorias.every(skill =>
     candidatura.skills.includes(skill)
   );
@@ -135,7 +129,6 @@ const calcularStatus = (
     return 'inapto';
   }
 
-  // Contar skills desejáveis
   const skillsDesejaveisAtendidas = vaga.skills_desejaveis.filter(skill =>
     candidatura.skills.includes(skill)
   ).length;
@@ -169,7 +162,6 @@ export const saveCandidatura = (
   return novaCandidatura;
 };
 
-// Autenticação
 export const login = (email: string, senha: string): Recrutador | null => {
   const recrutadores: Recrutador[] = JSON.parse(
     localStorage.getItem(STORAGE_KEYS.RECRUTADORES) || '[]'
@@ -206,7 +198,6 @@ export const register = (
     localStorage.getItem(STORAGE_KEYS.RECRUTADORES) || '[]'
   );
   
-  // Verificar se email já existe
   if (recrutadores.some(r => r.email === email)) {
     return null;
   }

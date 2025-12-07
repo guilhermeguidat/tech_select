@@ -72,10 +72,9 @@ const Candidatura = () => {
     if (!vaga) return;
 
     try {
-      // Map skills to backend format
       const skillsRequest = data.skills.map(skill => ({
         descricao: skill,
-        nivel: 'CANDIDATURA' // NivelSkill enum has CANDIDATURA for candidate skills
+        nivel: 'CANDIDATURA'
       }));
 
       await api.createCandidatura({
